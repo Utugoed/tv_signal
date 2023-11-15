@@ -6,7 +6,7 @@ int main()
 {
     FILE *signal_ptr;
 
-    float delay = 0.1;
+    float delay = 0.13;
 
     signal_ptr = fopen("cable", "w");
     fseek(signal_ptr, 0, SEEK_SET);
@@ -31,6 +31,10 @@ int main()
                 sleep(delay);
             }
         }
+	signal_ptr = fopen("cable", "w");
+    	fseek(signal_ptr, 0, SEEK_SET);
+    	fputc('2', signal_ptr);
+    	fclose(signal_ptr);
     }
 
     return 0;
