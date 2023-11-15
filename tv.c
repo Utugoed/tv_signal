@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 #include <unistd.h>
 
 #include <asm/termbits.h>
@@ -50,28 +51,26 @@ int main()
     char signal_char;
     int signal;
 
-    float delay = 0.1;
+    struct timespec delay = {0,5000000};
+    struct timespec tr;
+
     short no_signal = 0;
     short skip_frame = 0;
 
     set_noncan();
     clear_screen();
+    fflush(stdout);
 
     while (1)
     {
         for (int i = 0; i < 16; i++)
         {
             move_cursor(i, 0);
+	    fflush(stdout);
             for (int j = 0; j < 24; j++)
             {
 		signal_ptr = fopen("cable", "r");
 
-    		if (signal_ptr == NULL)
-    		{
-        		printf("Unable to receive signal");
-			no_signal = 1;
-        		break;
-    		}
                 fseek(signal_ptr, 0, SEEK_SET);
 		signal_char = fgetc(signal_ptr);
                 signal = signal_char - '0';
@@ -79,20 +78,29 @@ int main()
 		fclose(signal_ptr);
 		if (signal == 2)
 		{
-
+		    skip_frame = 1;
 		    break;
+		}
+		if (signal == 3)
+		{
+		    j = -1;
+		    move_cursor(i, 0);
+        	    fflush(stdout);
+		    continue;
 		}
 		if (signal == 0)
                     printf(".");
 		else
                     printf("@");
-		sleep(delay);
+		fflush(stdout);
+		nanosleep(&delay, &tr);
             }
-	    if (no_signal == 1 || skip_frame == 1)
+	    if (skip_frame == 1)
+	    {
+		skip_frame = 0;
                 break;
+	    }
         }
-	if (no_signal == 1)
-                break;
     }
 
     set_canon();

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 #include <unistd.h>
 
 
@@ -6,14 +7,34 @@ int main()
 {
     FILE *signal_ptr;
 
-    float delay = 0.1;
+    struct timespec delay = {0,5050000};
+    struct timespec tr;
+
+    short frame[16][24] = {
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0},
+        {0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0},
+        {0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0},
+        {0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0},
+        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+        {1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1},
+        {1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1},
+        {1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1},
+        {1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1}
+    };
 
     signal_ptr = fopen("cable", "w");
     fseek(signal_ptr, 0, SEEK_SET);
     fputc('2', signal_ptr);
     fclose(signal_ptr);
 
-    sleep(delay);
+    nanosleep(&delay, &tr);
 
     while(1)
     {
@@ -23,14 +44,26 @@ int main()
             {
                 signal_ptr = fopen("cable", "w");
                 fseek(signal_ptr, 0, SEEK_SET);
-                if (j < 3)
+                if (frame[i][j] == 1)
                     fputc('1', signal_ptr);
                 else
                     fputc('0', signal_ptr);
                 fclose(signal_ptr);
-                sleep(delay);
+                nanosleep(&delay, &tr);
             }
+	    signal_ptr = fopen("cable", "w");
+            fseek(signal_ptr, 0, SEEK_SET);
+            fputc('3', signal_ptr);
+            fclose(signal_ptr);
+
+            nanosleep(&delay, &tr);
         }
+	signal_ptr = fopen("cable", "w");
+        fseek(signal_ptr, 0, SEEK_SET);
+        fputc('2', signal_ptr);
+        fclose(signal_ptr);
+
+        nanosleep(&delay, &tr);
     }
 
     return 0;
