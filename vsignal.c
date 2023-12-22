@@ -7,6 +7,7 @@ int main()
 {
     FILE *signal_ptr;
 
+<<<<<<< HEAD
     struct timespec delay = {0,5050000};
     struct timespec tr;
 
@@ -28,6 +29,9 @@ int main()
         {1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1},
         {1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1}
     };
+=======
+    float delay = 0.13;
+>>>>>>> master
 
     signal_ptr = fopen("cable", "w");
     fseek(signal_ptr, 0, SEEK_SET);
@@ -59,11 +63,17 @@ int main()
             nanosleep(&delay, &tr);
         }
 	signal_ptr = fopen("cable", "w");
+<<<<<<< HEAD
         fseek(signal_ptr, 0, SEEK_SET);
         fputc('2', signal_ptr);
         fclose(signal_ptr);
 
         nanosleep(&delay, &tr);
+=======
+    	fseek(signal_ptr, 0, SEEK_SET);
+    	fputc('2', signal_ptr);
+    	fclose(signal_ptr);
+>>>>>>> master
     }
 
     return 0;

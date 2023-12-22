@@ -14,10 +14,10 @@ int set_noncan()
     ioctl(0, TCGETS, &canon_terminal);
     ioctl(0, TCGETS, &noncan_terminal);
 
-    noncan_terminal.c_lflag = noncan_terminal.c_lflag & ECHO_FLAG;
-    noncan_terminal.c_lflag = noncan_terminal.c_lflag & ICANON_FLAG;
+    noncan_terminal.c_lflag = noncan_terminal.c_lflag ^ ECHO_FLAG;
+    noncan_terminal.c_lflag = noncan_terminal.c_lflag ^ ICANON_FLAG;
 
-    ioctl(0, TCSETS, &canon_terminal);
+    ioctl(0, TCSETS, &noncan_terminal);
 
     return 0;
 }
