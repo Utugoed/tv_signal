@@ -51,7 +51,7 @@ int main()
     char signal_char;
     int signal;
 
-    struct timespec delay = {0,5000000};
+    struct timespec delay = {0,10000000};   
     struct timespec tr;
 
     short no_signal = 0;
@@ -59,47 +59,50 @@ int main()
 
     set_noncan();
     clear_screen();
-    fflush(stdout);
 
     while (1)
     {
-        for (int i = 0; i < 16; i++)
+        for (int i = 1; i < 17; i++)
         {
             move_cursor(i, 0);
-	    fflush(stdout);
+	        fflush(stdout);
             for (int j = 0; j < 24; j++)
             {
-		signal_ptr = fopen("cable", "r");
+		        signal_ptr = fopen("cable", "r");
 
                 fseek(signal_ptr, 0, SEEK_SET);
-		signal_char = fgetc(signal_ptr);
+		        signal_char = fgetc(signal_ptr);
                 signal = signal_char - '0';
+                fclose(signal_ptr);
 
-		fclose(signal_ptr);
-		if (signal == 2)
-		{
-		    skip_frame = 1;
-		    break;
-		}
-		if (signal == 3)
-		{
-		    j = -1;
-		    move_cursor(i, 0);
-        	    fflush(stdout);
-		    continue;
-		}
-		if (signal == 0)
+                if (signal == 2)
+                {
+                    skip_frame = 1;
+                    nanosleep(&delay, &tr);
+                    break;
+                }
+                if (signal == 3)
+                {
+                    j = -1;
+                    move_cursor(i, 0);
+                    fflush(stdout);
+                    nanosleep(&delay, &tr);
+                    continue;
+                }
+                if (signal == 0)
                     printf(".");
-		else
+                else
                     printf("@");
-		fflush(stdout);
-		nanosleep(&delay, &tr);
+                fflush(stdout);
+
+                nanosleep(&delay, &tr);
             }
-	    if (skip_frame == 1)
-	    {
-		skip_frame = 0;
+
+            if (skip_frame == 1)
+            {
+                skip_frame = 0;
                 break;
-	    }
+            }
         }
     }
 
